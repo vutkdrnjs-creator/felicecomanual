@@ -30,7 +30,9 @@ let checks = load(keys.checks, checklistSeed);
 let sections = load(keys.manual, manualSeed.sections);
 let sharedEndpoint = localStorage.getItem(keys.sharedEndpoint) || defaultSharedEndpoint();
 let sharedSaveTimer = 0;
+let sharedPollTimer = 0;
 let applyingRemote = false;
+let savingShared = false;
 
 document.getElementById("headerDate").textContent = manualSeed.meta.lastUpdated;
 document.getElementById("sideDate").textContent = "최종 수정일 " + manualSeed.meta.lastUpdated;
@@ -44,7 +46,7 @@ function load(key, fallback) {
 }
 
 function defaultSharedEndpoint() {
-  return /^https?:$/.test(location.protocol) ? "/api/state" : "";
+  return window.FELICE_SHARED_ENDPOINT || (/^https?:$/.test(location.protocol) ? "/api/state" : "");
 }
 
 function persist() {
@@ -80,16 +82,19 @@ function normalizeSharedPayload(payload) {
 
 async function loadSharedData(showAlert = false) {
   if (!sharedEndpoint) {
-    if (showAlert) alert("먼저 Google Apps Script 웹앱 URL을 입력해 주세요.");
-    return;
+    if (showAlert) alert("배포 URL에서는 자동 공유 저장이 켜집니다. file://로 열면 공유 저장이 작동하지 않습니다.");
+    return false;
   }
+  if (savingShared) return false;
   try {
-    const response = await fetch(`${sharedEndpoint}${sharedEndpoint.includes("?") ? "&" : "?"}t=${Date.now()}`, { cache: "no-store" });
-    const payload = await response.json();
+    const sep = sharedEndpoint.includes("?") ? "&" : "?";
+    const response = await fetch(sharedEndpoint + sep + "t=" + Date.now(), { cache: "no-store" });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || "공유 데이터를 불러오지 못했습니다.");
     const data = normalizeSharedPayload(payload);
     if (!data) {
       if (showAlert) alert("공유 저장소에 아직 데이터가 없습니다. 먼저 현재 상태를 올려 주세요.");
-      return;
+      return false;
     }
     applyingRemote = true;
     tasks = data.tasks;
@@ -100,29 +105,40 @@ async function loadSharedData(showAlert = false) {
     localStorage.setItem(keys.sharedUpdatedAt, data.updatedAt || new Date().toISOString());
     render();
     if (showAlert) alert("공유 데이터를 불러왔습니다.");
+    return true;
   } catch (error) {
     applyingRemote = false;
-    if (showAlert) alert("공유 데이터를 불러오지 못했습니다. Apps Script URL과 배포 권한을 확인해 주세요.");
+    console.warn("Shared load failed", error);
+    if (showAlert) alert("공유 데이터를 불러오지 못했습니다. " + (error.message || "Vercel 환경변수와 Google Sheet 권한을 확인해 주세요."));
+    return false;
   }
 }
 
 function scheduleSharedSave() {
   if (!sharedEndpoint) return;
   clearTimeout(sharedSaveTimer);
-  sharedSaveTimer = window.setTimeout(saveSharedData, 700);
+  sharedSaveTimer = window.setTimeout(saveSharedData, 300);
 }
 
 async function saveSharedData() {
-  if (!sharedEndpoint) return;
+  if (!sharedEndpoint) return false;
+  savingShared = true;
   try {
-    await fetch(sharedEndpoint, {
+    const response = await fetch(sharedEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json;charset=utf-8" },
       body: JSON.stringify(snapshot()),
     });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || "공유 저장에 실패했습니다.");
     localStorage.setItem(keys.sharedUpdatedAt, new Date().toISOString());
+    savingShared = false;
+    return true;
   } catch (error) {
+    savingShared = false;
     console.warn("Shared save failed", error);
+    alert("공유 저장 실패: " + (error.message || "Vercel 환경변수와 Google Sheet 편집 권한을 확인해 주세요."));
+    return false;
   }
 }
 
@@ -140,10 +156,12 @@ function saveSharedEndpoint() {
 
 function pushCurrentDataToShared() {
   if (!sharedEndpoint) {
-    alert("먼저 Google Apps Script 웹앱 URL을 입력해 주세요.");
+    alert("배포 URL에서는 자동 공유 저장이 켜집니다. file://로 열면 공유 저장이 작동하지 않습니다.");
     return;
   }
-  saveSharedData().then(() => alert("현재 데이터를 공유 저장소로 보냈습니다."));
+  saveSharedData().then((ok) => {
+    if (ok) alert("현재 데이터를 공유 저장소로 보냈습니다.");
+  });
 }
 
 function formatLocalIso(date) {
@@ -178,10 +196,6 @@ function validateTaskDeadline(period, startDate, dueDate) {
   const diff = daysBetween(startDate, dueDate);
   if (diff < 0) {
     alert("마감일은 시작일보다 빠를 수 없습니다.");
-    return false;
-  }
-  if (period === "short" && (diff < 7 || diff > 15)) {
-    alert("단기 업무 마감일은 시작일 기준 최소 7일, 최대 15일 안으로 설정해 주세요.");
     return false;
   }
   return true;
@@ -412,7 +426,7 @@ function toolsView() {
 }
 
 function dataView() {
-  return `<section class="section"><div class="section-head"><div><h2>관리</h2><p class="section-sub">검색, 백업·복원, PDF 인쇄 기능입니다.</p></div><button onclick="go('search')">검색 열기</button></div><div class="card-list two-col-desktop"><article class="tool-card"><h3>Google 공유 저장</h3><p>Vercel 배포 시 /api/state가 Google Sheets에 수정·삭제·완료·체크 상태를 저장합니다. 파일로 직접 열 때만 별도 URL 입력이 필요합니다.</p><input id="sharedEndpoint" placeholder="/api/state 또는 공유 API URL" value="${esc(sharedEndpoint)}"><div class="actions"><button class="primary-btn" onclick="saveSharedEndpoint()">공유 연결</button><button onclick="loadSharedData(true)">공유 데이터 불러오기</button><button onclick="pushCurrentDataToShared()">현재 상태 올리기</button></div><p class="muted">마지막 공유 저장: ${localStorage.getItem(keys.sharedUpdatedAt) || "기록 없음"}</p></article>
+  return `<section class="section"><div class="section-head"><div><h2>관리</h2><p class="section-sub">검색, 백업·복원, PDF 인쇄 기능입니다.</p></div><button onclick="go('search')">검색 열기</button></div><div class="card-list two-col-desktop"><article class="tool-card"><h3>Google 공유 저장</h3><p>config.js에 입력한 Google Apps Script URL 또는 /api/state가 수정·삭제·완료·체크 상태를 공통 저장소에 저장합니다.</p><input id="sharedEndpoint" placeholder="/api/state 또는 공유 API URL" value="${esc(sharedEndpoint)}"><div class="actions"><button class="primary-btn" onclick="saveSharedEndpoint()">공유 연결</button><button onclick="loadSharedData(true)">공유 데이터 불러오기</button><button onclick="pushCurrentDataToShared()">현재 상태 올리기</button></div><p class="muted">마지막 공유 저장: ${localStorage.getItem(keys.sharedUpdatedAt) || "기록 없음"}</p></article>
     <article class="tool-card"><h3>JSON 내보내기</h3><p>현재 업무, 체크리스트, 매뉴얼 상태를 파일로 저장합니다.</p><button class="primary-btn" onclick="exportData()">JSON 내보내기</button><p class="muted">최근 백업일: ${localStorage.getItem(keys.backup) || "기록 없음"}</p></article>
     <article class="tool-card"><h3>JSON 불러오기</h3><textarea id="importText" placeholder="백업 JSON 내용을 붙여넣기"></textarea><button onclick="importData()">JSON 불러오기</button></article>
     <article class="tool-card"><h3>초기 데이터 복원</h3><p>수정 가능한 seed 예시 데이터로 되돌립니다.</p><button class="danger-btn" onclick="resetData()">초기 데이터 복원</button></article>
@@ -432,7 +446,7 @@ function searchView() {
 
 function openTaskEditor(period, taskId) {
   const task = taskId ? tasks.find((item) => item.id === taskId) : { id: uid("task"), period, title: "", description: "", category: "", status: "todo", priority: "medium", assignee: "", startDate: todayIso(), dueDate: defaultDueDate(period), tools: [], links: [], notes: "", checklistIds: [], source: "사용자 추가", editable: true, createdAt: todayIso(), updatedAt: todayIso() };
-  showModal(`<h2>업무 편집</h2><input id="taskTitle" required placeholder="업무명" value="${esc(task.title)}"><textarea id="taskDesc" placeholder="상세 설명">${esc(task.description)}</textarea><div class="form-grid"><select id="taskPeriod">${Object.entries(periods).map(([key, label]) => `<option value="${key}" ${task.period === key ? "selected" : ""}>${label}</option>`).join("")}</select><select id="taskStatus">${Object.entries(statuses).map(([key, label]) => `<option value="${key}" ${task.status === key ? "selected" : ""}>${label}</option>`).join("")}</select><select id="taskPriority">${Object.entries(priorities).map(([key, label]) => `<option value="${key}" ${task.priority === key ? "selected" : ""}>${label}</option>`).join("")}</select><input id="taskCategory" placeholder="카테고리" value="${esc(task.category)}"><input id="taskAssignee" placeholder="담당자" value="${esc(task.assignee)}"><input id="taskStart" type="date" value="${esc(task.startDate)}"><input id="taskDue" type="date" value="${esc(task.dueDate)}"><input id="taskTools" placeholder="도구, 쉼표 구분" value="${esc((task.tools || []).join(", "))}"></div><p class="form-hint">모든 업무는 시작일과 마감일이 필수입니다. 단기 업무는 시작일 기준 7일~15일 안으로 설정합니다.</p><textarea id="taskNotes" placeholder="메모">${esc(task.notes)}</textarea><div class="modal-actions"><button class="primary-btn" onclick="saveTask('${task.id}')">저장</button><button onclick="closeModal()">취소</button></div>`);
+  showModal(`<h2>업무 편집</h2><input id="taskTitle" required placeholder="업무명" value="${esc(task.title)}"><textarea id="taskDesc" placeholder="상세 설명">${esc(task.description)}</textarea><div class="form-grid"><select id="taskPeriod">${Object.entries(periods).map(([key, label]) => `<option value="${key}" ${task.period === key ? "selected" : ""}>${label}</option>`).join("")}</select><select id="taskStatus">${Object.entries(statuses).map(([key, label]) => `<option value="${key}" ${task.status === key ? "selected" : ""}>${label}</option>`).join("")}</select><select id="taskPriority">${Object.entries(priorities).map(([key, label]) => `<option value="${key}" ${task.priority === key ? "selected" : ""}>${label}</option>`).join("")}</select><input id="taskCategory" placeholder="카테고리" value="${esc(task.category)}"><input id="taskAssignee" placeholder="담당자" value="${esc(task.assignee)}"><input id="taskStart" type="date" value="${esc(task.startDate)}"><input id="taskDue" type="date" value="${esc(task.dueDate)}"><input id="taskTools" placeholder="도구, 쉼표 구분" value="${esc((task.tools || []).join(", "))}"></div><p class="form-hint">모든 업무는 시작일과 마감일이 필수입니다. 단기 업무도 필요한 일정에 맞춰 자유롭게 기간을 설정할 수 있습니다.</p><textarea id="taskNotes" placeholder="메모">${esc(task.notes)}</textarea><div class="modal-actions"><button class="primary-btn" onclick="saveTask('${task.id}')">저장</button><button onclick="closeModal()">취소</button></div>`);
 }
 
 function saveTask(id) {
@@ -596,7 +610,12 @@ function value(id) {
 function initSharedMode() {
   if (!sharedEndpoint) return;
   loadSharedData(false);
-  window.setInterval(() => loadSharedData(false), 20000);
+  clearInterval(sharedPollTimer);
+  sharedPollTimer = window.setInterval(() => loadSharedData(false), 2000);
+  window.addEventListener("focus", () => loadSharedData(false));
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) loadSharedData(false);
+  });
 }
 
 render();
