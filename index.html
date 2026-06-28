@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FELICE COMPANY 운영 매뉴얼</title>
+  <link rel="icon" href="public/felice-logo-green.jpg">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="mobile-header">
+      <div class="header-inner">
+        <div class="brand-block" role="button" tabindex="0" onclick="go('home')" onkeydown="if(event.key==='Enter')go('home')">
+          <img class="brand-logo" src="public/felice-logo-green.jpg" alt="FELICE COMPANY 로고">
+          <div class="brand-copy"><strong>FELICE COMPANY</strong><span>운영 매뉴얼 · <span id="headerDate"></span></span></div>
+        </div>
+        <input class="desktop-search" id="desktopQ" placeholder="전체 검색" oninput="state.q=this.value;go('search')" aria-label="전체 검색">
+        <div class="header-actions">
+          <button class="icon-button" onclick="toggleSearch()" aria-label="검색 열기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+          <button class="icon-button" onclick="toggleMore()" aria-label="더보기 메뉴"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+        </div>
+        <div class="more-menu" id="moreMenu">
+          <button onclick="printCurrent()">현재 화면 PDF</button>
+          <button onclick="go('data')">백업·복원</button>
+          <button onclick="exportData()">JSON 내보내기</button>
+        </div>
+      </div>
+    </header>
+    <div class="layout">
+      <aside class="sidebar" aria-label="PC 사이드 메뉴">
+        <div class="side-brand"><img src="public/felice-logo-green.jpg" alt=""><div><strong>운영 매뉴얼</strong><div class="muted" id="sideDate"></div></div></div>
+        <nav class="side-nav" id="sideNav"></nav>
+      </aside>
+      <main class="main">
+        <section class="search-panel" id="searchPanel"><input id="mobileQ" placeholder="업무, 체크리스트, 매뉴얼 검색" oninput="state.q=this.value;go('search')" aria-label="검색어 입력"></section>
+        <div id="app"></div>
+      </main>
+    </div>
+    <nav class="bottom-nav" id="bottomNav" aria-label="모바일 하단 메뉴"></nav>
+  </div>
+  <script>window.__FELICE_SEED__ = { manual: {
+  "meta": {
+    "title": "FELICE COMPANY 운영 매뉴얼",
+    "basisDate": "2026.06.21",
+    "lastUpdated": "2026.06.22",
+    "sourceNote": "2026.06.21 음성 전사와 이후 사용자 확정사항을 기반으로 한 수정 가능한 초기 초안"
+  },
+  "sections": [
+    {
+      "id": "manual-operating-principles",
+      "title": "운영 기본 원칙",
+      "summary": "업무를 개인 기억에만 두지 않고 외부 실무 도구와 업무방에 기록한다.",
+      "category": "운영",
+      "tools": [
+        "Google Calendar",
+        "Google Sheets",
+        "Google Drive",
+        "KakaoTalk"
+      ],
+      "trigger": "매일 업무를 시작하고 마칠 때",
+      "purpose": "대표와 담당자가 현재 진행 상황, 막힌 업무, 다음 행동을 확인할 수 있게 한다.",
+      "steps": [
+        "일정은 Google Calendar에서 확인한다.",
+        "DB와 진행 현황은 Google Sheets에 기록한다.",
+        "자료는 Google Drive의 정해진 폴더에 저장한다.",
+        "핵심 진행 상황과 요청은 KakaoTalk 업무방에 공유한다.",
+        "사이트 체크리스트로 개인 누락 여부를 점검한다."
+      ],
+      "recordLocation": [
+        "Google Calendar",
+        "Google Sheets",
+        "Google Drive",
+        "KakaoTalk 업무방"
+      ],
+      "reporting": [
+        "아침에는 일정과 우선 업무",
+        "저녁에는 처리 결과와 미완료 업무"
+      ],
+      "completionCriteria": [
+        "기록 위치가 명확함",
+        "다음 행동과 담당자가 확인됨"
+      ],
+      "cautions": [
+        "고객 개인정보를 사이트 localStorage에 저장하지 않는다."
+      ],
+      "relatedChecklistIds": [
+        "checklist-morning",
+        "checklist-evening"
+      ],
+      "sourceStatus": "confirmed",
+      "updatedAt": "2026-06-22"
+    },
+    {
+      "id": "manual-db-tm",
+      "title": "DB·TM 관리",
+      "summary": "최근 문의와 기존 DB를 순차적으로 연락하고 결과와 다음 행동을 남긴다.",
+      "category": "DB / TM",
+      "tools": [
+        "Google Sheets",
+        "KakaoTalk"
+      ],
+      "trigger": "평일 TM 업무 시간과 신규 문의 접수 시",
+      "purpose": "고객 누락을 막고 통화 결과를 계약 가능성에 따라 계속 추적한다.",
+      "steps": [
+        "오늘 연락할 DB 범위를 확인한다.",
+        "고객에게 연락한다.",
+        "통화 결과와 현재 단계를 입력한다.",
+        "다음 연락일과 필요한 자료를 입력한다.",
+        "대표 통화가 필요한 고객을 분리해 보고한다."
+      ],
+      "recordLocation": [
+        "Google Sheets DB 관리시트",
+        "KakaoTalk 업무방"
+      ],
+      "reporting": [
+        "연락 구간",
+        "고객별 결과",
+        "다음 행동",
+        "대표 통화 필요 여부"
+      ],
+      "completionCriteria": [
+        "통화 결과 입력",
+        "다음 행동 입력",
+        "재통화일 또는 종료 상태 지정"
+      ],
+      "cautions": [
+        "정확한 일일 수량과 색상 기준은 대표 확인 필요"
+      ],
+      "relatedChecklistIds": [
+        "checklist-db-call",
+        "checklist-evening"
+      ],
+      "sourceStatus": "draft",
+      "updatedAt": "2026-06-22"
+    },
+    {
+      "id": "manual-meeting-followup",
+      "title": "미팅·시식 후속 관리",
+      "summary": "미팅이나 시식 후 자료, 문자, 다음 연락일을 빠뜨리지 않는다.",
+      "category": "미팅 / 시식",
+      "tools": [
+        "Google Calendar",
+        "Google Sheets",
+        "KakaoTalk",
+        "Google Drive"
+      ],
+      "trigger": "대면 미팅, 시식, 현장 방문이 끝난 직후",
+      "purpose": "미팅이 끝난 뒤 연락이 끊기지 않도록 후속 행동을 정리한다.",
+      "steps": [
+        "미팅 핵심 내용을 정리한다.",
+        "필요한 자료를 저장하고 전달한다.",
+        "후속 문자를 발송하거나 담당자에게 요청한다.",
+        "다음 연락일을 Calendar와 Sheets에 반영한다.",
+        "대표 통화 필요 여부를 보고한다."
+      ],
+      "recordLocation": [
+        "Google Sheets",
+        "Google Calendar",
+        "Google Drive",
+        "KakaoTalk 업무방"
+      ],
+      "reporting": [
+        "고객 반응",
+        "자료 전달",
+        "후속 연락일",
+        "대표 통화 필요 여부"
+      ],
+      "completionCriteria": [
+        "자료 전달 확인",
+        "후속 연락일 등록",
+        "DB 상태 반영"
+      ],
+      "cautions": [
+        "후속 문자 담당자는 대표 확인 필요"
+      ],
+      "relatedChecklistIds": [
+        "checklist-meeting-followup"
+      ],
+      "sourceStatus": "draft",
+      "updatedAt": "2026-06-22"
+    },
+    {
+      "id": "manual-contract-site",
+      "title": "계약·현장 진행 관리",
+      "summary": "정보공개서와 가맹계약서 전달 이후의 일정과 현장 진행을 별도 방에서 확인한다.",
+      "category": "계약 / 현장",
+      "tools": [
+        "KakaoTalk",
+        "Google Calendar",
+        "Google Sheets",
+        "Google Drive"
+      ],
+      "trigger": "예비 점주가 계약 검토 이후 실제 진행 단계로 이동할 때",
+      "purpose": "예비 점주와 현장 인원 사이의 일정·자료·진행 상태를 누락 없이 확인한다.",
+      "steps": [
+        "계약·현장 진행방 개설 대상인지 확인한다.",
+        "정보공개서와 가맹계약서 전달 및 검토 여부를 확인한다.",
+        "점포, 실측, 도면, 견적, 공사, 교육, 오픈 일정을 정리한다.",
+        "예비 점주 또는 현장 담당자에게 실제 상황을 확인한다.",
+        "Google Calendar와 Sheets를 갱신하고 핵심 내용을 방에 공유한다."
+      ],
+      "recordLocation": [
+        "KakaoTalk 계약·현장 진행방",
+        "Google Calendar",
+        "Google Sheets",
+        "Google Drive"
+      ],
+      "reporting": [
+        "확정 일정",
+        "지연 사항",
+        "결정 필요 사항",
+        "담당자"
+      ],
+      "completionCriteria": [
+        "다음 일정 확정",
+        "담당자 확인",
+        "지연 사항 공유"
+      ],
+      "cautions": [
+        "방 개설의 정확한 기준과 담당자는 대표 확인 필요"
+      ],
+      "relatedChecklistIds": [
+        "checklist-contract-site"
+      ],
+      "sourceStatus": "confirmed",
+      "updatedAt": "2026-06-22"
+    },
+    {
+      "id": "manual-approval",
+      "title": "결재 관리",
+      "summary": "결재 요청을 기록하고 완료될 때까지 상태를 추적한다.",
+      "category": "결재",
+      "tools": [
+        "Google Sheets",
+        "Google Drive",
+        "KakaoTalk"
+      ],
+      "trigger": "대표 결재가 필요한 자료나 의사결정이 생겼을 때",
+      "purpose": "결재 누락과 지연을 막는다.",
+      "steps": [
+        "결재 요청 내용과 관련 자료를 정리한다.",
+        "KakaoTalk 업무방에 핵심을 공유한다.",
+        "결재 상태를 Google Sheets에 입력한다.",
+        "미결재 상태를 재확인한다.",
+        "완료 후 담당자에게 전달하고 기록을 갱신한다."
+      ],
+      "recordLocation": [
+        "Google Sheets 결재 현황",
+        "Google Drive 관련 파일",
+        "KakaoTalk 업무방"
+      ],
+      "reporting": [
+        "요청 내용",
+        "마감",
+        "미결재 사유",
+        "완료 여부"
+      ],
+      "completionCriteria": [
+        "결재 완료",
+        "담당자 전달",
+        "시트 상태 변경"
+      ],
+      "cautions": [
+        "민감한 결재 자료를 사이트에 저장하지 않는다."
+      ],
+      "relatedChecklistIds": [
+        "checklist-approval"
+      ],
+      "sourceStatus": "confirmed",
+      "updatedAt": "2026-06-22"
+    },
+    {
+      "id": "manual-site-photos",
+      "title": "현장 사진·콘텐츠 관리",
+      "summary": "계약 이후 점포 현장과 예비 점주 활동을 기록하고 콘텐츠 자료로 활용한다.",
+      "category": "현장 사진 / 콘텐츠",
+      "tools": [
+        "KakaoTalk",
+        "Google Drive",
+        "Google Sheets"
+      ],
+      "trigger": "실측, 공사, 설치, 교육, 오픈 준비 등 현장 변화가 있을 때",
+      "purpose": "현장 진행을 확인하고 홈페이지·블로그·인스타그램에 활용할 근거 자료를 축적한다.",
+      "steps": [
+        "예비 점주 또는 현장 담당자에게 사진과 설명을 요청한다.",
+        "현장명, 촬영일, 공정, 설명을 확인한다.",
+        "원본을 Google Drive에 저장한다.",
+        "Google Sheets에 활용 여부와 진행 상태를 기록한다.",
+        "확인된 자료만 콘텐츠로 활용한다."
+      ],
+      "recordLocation": [
+        "Google Drive 현장별 폴더",
+        "Google Sheets 콘텐츠 관리",
+        "KakaoTalk 진행방"
+      ],
+      "reporting": [
+        "현재 공정",
+        "받은 사진",
+        "누락 자료",
+        "활용 예정 채널"
+      ],
+      "completionCriteria": [
+        "원본 저장",
+        "설명 확인",
+        "활용 상태 기록"
+      ],
+      "cautions": [
+        "사진 사용 권한과 개인정보 노출 여부를 확인한다."
+      ],
+      "relatedChecklistIds": [
+        "checklist-site-photos"
+      ],
+      "sourceStatus": "confirmed",
+      "updatedAt": "2026-06-22"
+    }
+  ]
+}
+, tasks: [
+  {
+    "id": "task-short-daily-db",
+    "period": "short",
+    "title": "신DB·구DB 관리와 TM 진행",
+    "description": "최근 유입 DB를 우선 확인하고 기존 DB도 순차적으로 연락한다. 결과와 다음 행동은 Google Sheets에 기록한다.",
+    "category": "DB / TM",
+    "status": "todo",
+    "priority": "high",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Sheets",
+      "KakaoTalk"
+    ],
+    "links": [],
+    "notes": "정확한 일일 수량은 대표 확인 필요",
+    "checklistIds": [
+      "checklist-db-call"
+    ],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-short-morning-evening",
+    "period": "short",
+    "title": "아침·저녁 업무보고 정착",
+    "description": "아침에는 일정과 우선 업무, 저녁에는 통화 결과·미완료·다음 행동을 짧게 보고한다.",
+    "category": "일정 / 보고",
+    "status": "todo",
+    "priority": "high",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Calendar",
+      "KakaoTalk"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [
+      "checklist-morning",
+      "checklist-evening"
+    ],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-short-followup",
+    "period": "short",
+    "title": "미팅·시식 후속 연락 누락 방지",
+    "description": "미팅 내용, 자료 전달, 후속 문자, 다음 연락일, 대표 통화 필요 여부를 정리한다.",
+    "category": "미팅 / 시식",
+    "status": "todo",
+    "priority": "high",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Calendar",
+      "Google Sheets",
+      "KakaoTalk",
+      "Google Drive"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [
+      "checklist-meeting-followup"
+    ],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-short-approval",
+    "period": "short",
+    "title": "미결재 및 대표 통화 대상 정리",
+    "description": "결재가 필요한 항목과 대표가 직접 전화해야 할 고객을 별도 정리해 업무방에 공유한다.",
+    "category": "결재",
+    "status": "todo",
+    "priority": "high",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Sheets",
+      "KakaoTalk",
+      "Google Drive"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [
+      "checklist-approval"
+    ],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-short-copier",
+    "period": "short",
+    "title": "복사기·스캔 사용법 정리",
+    "description": "A3 출력, 스캔 저장 위치, 컴퓨터 연결, 용지·토너·오류 대응을 매뉴얼에 추가한다.",
+    "category": "문서 / 사무기기",
+    "status": "todo",
+    "priority": "medium",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Drive"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-mid-db-structure",
+    "period": "mid_long",
+    "title": "DB 분류 및 상태 기준 정리",
+    "description": "유입 시기, 가망, 미팅, 인테리어, 종료 상태를 구분하고 Google Sheets 입력 기준을 문서화한다.",
+    "category": "DB / TM",
+    "status": "todo",
+    "priority": "high",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Sheets"
+    ],
+    "links": [],
+    "notes": "수량·색상·종료 기준은 대표 확인 후 확정",
+    "checklistIds": [],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-mid-contract-room",
+    "period": "mid_long",
+    "title": "계약·현장 진행방 운영 기준 정착",
+    "description": "정보공개서와 가맹계약서 전달 이후 점포·실측·도면·견적·공사·교육·오픈 일정을 확인하는 방식을 정리한다.",
+    "category": "계약 / 현장",
+    "status": "todo",
+    "priority": "high",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "KakaoTalk",
+      "Google Calendar",
+      "Google Sheets",
+      "Google Drive"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [
+      "checklist-contract-site"
+    ],
+    "source": "2026-06-21 음성 전사 및 사용자 정정 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-mid-photo-system",
+    "period": "mid_long",
+    "title": "현장 사진 수집·보관·활용 체계 구축",
+    "description": "계약 이후 현장 사진과 예비 점주 활동을 받아 Drive에 보관하고 진행 확인 및 콘텐츠에 활용한다.",
+    "category": "현장 사진 / 콘텐츠",
+    "status": "todo",
+    "priority": "medium",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "KakaoTalk",
+      "Google Drive",
+      "Google Sheets"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [
+      "checklist-site-photos"
+    ],
+    "source": "2026-06-21 음성 전사 및 사용자 정정 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-mid-channel-guide",
+    "period": "mid_long",
+    "title": "홈페이지·블로그·인스타그램·DM 운영 기준 정리",
+    "description": "채널별 역할, 게시 자료, 문의 처리, DB 전환, 승인 방식을 운영 매뉴얼로 만든다.",
+    "category": "홍보 / 콘텐츠",
+    "status": "todo",
+    "priority": "medium",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Drive",
+      "Google Sheets",
+      "KakaoTalk"
+    ],
+    "links": [],
+    "notes": "일일 게시 수량과 비공개 범위는 대표 확인 필요",
+    "checklistIds": [],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-long-routine",
+    "period": "long",
+    "title": "DB·TM과 후속 관리의 일상 루틴화",
+    "description": "신규 문의부터 장기 미응답 고객까지 매일 확인하고 다음 행동이 끊기지 않는 구조로 정착한다.",
+    "category": "DB / TM",
+    "status": "todo",
+    "priority": "high",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Sheets",
+      "Google Calendar",
+      "KakaoTalk"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [
+      "checklist-db-call",
+      "checklist-evening"
+    ],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-long-site-record",
+    "period": "long",
+    "title": "계약부터 오픈까지 현장 기록 축적",
+    "description": "계약 검토, 실측, 도면, 공사, 교육, 오픈의 흐름을 점포별로 기록하고 향후 매뉴얼과 사례에 반영한다.",
+    "category": "계약 / 현장",
+    "status": "todo",
+    "priority": "medium",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Calendar",
+      "Google Sheets",
+      "Google Drive",
+      "KakaoTalk"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [
+      "checklist-contract-site",
+      "checklist-site-photos"
+    ],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-long-new-brands",
+    "period": "long",
+    "title": "신규 외식 브랜드 발굴과 미팅",
+    "description": "외식업·프랜차이즈 관련 협회와 박람회 등을 활용해 새로운 브랜드를 조사하고 연락한다.",
+    "category": "신규 브랜드",
+    "status": "todo",
+    "priority": "medium",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "Google Sheets",
+      "Google Calendar",
+      "KakaoTalk"
+    ],
+    "links": [],
+    "notes": "",
+    "checklistIds": [],
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "task-long-manual-update",
+    "period": "long",
+    "title": "운영 매뉴얼 지속 수정",
+    "description": "실제 사용 중 발생한 문제와 확정된 기준을 날짜별로 반영해 매뉴얼을 최신 상태로 유지한다.",
+    "category": "운영",
+    "status": "todo",
+    "priority": "medium",
+    "assignee": "",
+    "startDate": "",
+    "dueDate": "",
+    "tools": [
+      "FELICE 운영 매뉴얼 사이트",
+      "GitHub"
+    ],
+    "links": [],
+    "notes": "문서 버전 번호 대신 최종 수정일 사용",
+    "checklistIds": [],
+    "source": "사용자 확정사항 기반 예시",
+    "editable": true,
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  }
+]
+, checklists: [
+  {
+    "id": "checklist-morning",
+    "title": "아침 업무 확인",
+    "description": "업무를 시작하기 전에 오늘 일정과 우선순위를 확인한다.",
+    "category": "일정 / 보고",
+    "items": [
+      {
+        "id": "checklist-morning-item-1",
+        "text": "Google Calendar의 오늘 일정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 1
+      },
+      {
+        "id": "checklist-morning-item-2",
+        "text": "미팅·시식 일정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 2
+      },
+      {
+        "id": "checklist-morning-item-3",
+        "text": "현장 방문 및 출장 일정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 3
+      },
+      {
+        "id": "checklist-morning-item-4",
+        "text": "신DB 통화 시작 위치 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 4
+      },
+      {
+        "id": "checklist-morning-item-5",
+        "text": "구DB 통화 시작 위치 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 5
+      },
+      {
+        "id": "checklist-morning-item-6",
+        "text": "대표 결재 필요 사항 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 6
+      },
+      {
+        "id": "checklist-morning-item-7",
+        "text": "대표 직접 통화 대상 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 7
+      },
+      {
+        "id": "checklist-morning-item-8",
+        "text": "전날 미완료 업무 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 8
+      },
+      {
+        "id": "checklist-morning-item-9",
+        "text": "오늘 우선 업무를 KakaoTalk 업무방에 공유",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 9
+      }
+    ],
+    "editable": true,
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "checklist-evening",
+    "title": "저녁 업무보고",
+    "description": "하루 처리 결과와 다음 행동을 짧고 명확하게 보고한다.",
+    "category": "일정 / 보고",
+    "items": [
+      {
+        "id": "checklist-evening-item-1",
+        "text": "신DB 통화 범위와 결과 정리",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 1
+      },
+      {
+        "id": "checklist-evening-item-2",
+        "text": "구DB 통화 범위와 결과 정리",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 2
+      },
+      {
+        "id": "checklist-evening-item-3",
+        "text": "가망 고객과 종료 고객 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 3
+      },
+      {
+        "id": "checklist-evening-item-4",
+        "text": "미팅·시식 확정 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 4
+      },
+      {
+        "id": "checklist-evening-item-5",
+        "text": "자료 전달 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 5
+      },
+      {
+        "id": "checklist-evening-item-6",
+        "text": "대표 후속 통화 대상 정리",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 6
+      },
+      {
+        "id": "checklist-evening-item-7",
+        "text": "미결재 업무 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 7
+      },
+      {
+        "id": "checklist-evening-item-8",
+        "text": "다음 날 업무 정리",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 8
+      },
+      {
+        "id": "checklist-evening-item-9",
+        "text": "KakaoTalk 업무방 보고 완료",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 9
+      }
+    ],
+    "editable": true,
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "checklist-db-call",
+    "title": "DB 통화 후 기록",
+    "description": "통화 직후 상태와 다음 행동을 Google Sheets에 남긴다.",
+    "category": "DB / TM",
+    "items": [
+      {
+        "id": "checklist-db-call-item-1",
+        "text": "통화 결과 입력",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 1
+      },
+      {
+        "id": "checklist-db-call-item-2",
+        "text": "고객 현재 단계 입력 또는 변경",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 2
+      },
+      {
+        "id": "checklist-db-call-item-3",
+        "text": "다음 연락일 입력",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 3
+      },
+      {
+        "id": "checklist-db-call-item-4",
+        "text": "요청 자료 입력",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 4
+      },
+      {
+        "id": "checklist-db-call-item-5",
+        "text": "자료 전달 여부 입력",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 5
+      },
+      {
+        "id": "checklist-db-call-item-6",
+        "text": "대표 통화 필요 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 6
+      },
+      {
+        "id": "checklist-db-call-item-7",
+        "text": "미팅·시식 가능 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 7
+      },
+      {
+        "id": "checklist-db-call-item-8",
+        "text": "Google Sheets 저장 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 8
+      }
+    ],
+    "editable": true,
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "checklist-meeting-followup",
+    "title": "미팅·시식 후속",
+    "description": "미팅 종료 후 자료와 후속 연락이 끊기지 않게 한다.",
+    "category": "미팅 / 시식",
+    "items": [
+      {
+        "id": "checklist-meeting-followup-item-1",
+        "text": "미팅 핵심 내용 정리",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 1
+      },
+      {
+        "id": "checklist-meeting-followup-item-2",
+        "text": "고객 질문과 요청사항 기록",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 2
+      },
+      {
+        "id": "checklist-meeting-followup-item-3",
+        "text": "관련 자료 Google Drive 저장",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 3
+      },
+      {
+        "id": "checklist-meeting-followup-item-4",
+        "text": "필요 자료 발송",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 4
+      },
+      {
+        "id": "checklist-meeting-followup-item-5",
+        "text": "후속 문자 발송 또는 담당자 요청",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 5
+      },
+      {
+        "id": "checklist-meeting-followup-item-6",
+        "text": "다음 연락일 Google Calendar 등록",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 6
+      },
+      {
+        "id": "checklist-meeting-followup-item-7",
+        "text": "Google Sheets 고객 상태 변경",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 7
+      },
+      {
+        "id": "checklist-meeting-followup-item-8",
+        "text": "대표 통화 필요 여부 보고",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 8
+      }
+    ],
+    "editable": true,
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "checklist-contract-site",
+    "title": "계약 이후 진행 확인",
+    "description": "정보공개서와 가맹계약서 전달 이후의 일정과 현장 진행을 확인한다.",
+    "category": "계약 / 현장",
+    "items": [
+      {
+        "id": "checklist-contract-site-item-1",
+        "text": "정보공개서 전달 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 1
+      },
+      {
+        "id": "checklist-contract-site-item-2",
+        "text": "가맹계약서 전달 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 2
+      },
+      {
+        "id": "checklist-contract-site-item-3",
+        "text": "서류 수령 및 검토 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 3
+      },
+      {
+        "id": "checklist-contract-site-item-4",
+        "text": "계약 예정일 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 4
+      },
+      {
+        "id": "checklist-contract-site-item-5",
+        "text": "점포 확정 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 5
+      },
+      {
+        "id": "checklist-contract-site-item-6",
+        "text": "실측 일정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 6
+      },
+      {
+        "id": "checklist-contract-site-item-7",
+        "text": "도면 일정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 7
+      },
+      {
+        "id": "checklist-contract-site-item-8",
+        "text": "견적 일정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 8
+      },
+      {
+        "id": "checklist-contract-site-item-9",
+        "text": "철거·공사 일정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 9
+      },
+      {
+        "id": "checklist-contract-site-item-10",
+        "text": "교육 일정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 10
+      },
+      {
+        "id": "checklist-contract-site-item-11",
+        "text": "오픈 예정일 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 11
+      },
+      {
+        "id": "checklist-contract-site-item-12",
+        "text": "예비 점주 확인사항 기록",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 12
+      },
+      {
+        "id": "checklist-contract-site-item-13",
+        "text": "현장 담당자 확인사항 기록",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 13
+      },
+      {
+        "id": "checklist-contract-site-item-14",
+        "text": "Google Calendar와 Sheets 갱신",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 14
+      },
+      {
+        "id": "checklist-contract-site-item-15",
+        "text": "KakaoTalk 계약·현장 진행방 공유",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 15
+      }
+    ],
+    "editable": true,
+    "source": "2026-06-21 음성 전사 및 사용자 정정 기반 예시",
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "checklist-site-photos",
+    "title": "현장 사진 수집",
+    "description": "점포 현장과 예비 점주 활동 자료를 확인하고 보관한다.",
+    "category": "현장 사진 / 콘텐츠",
+    "items": [
+      {
+        "id": "checklist-site-photos-item-1",
+        "text": "현장명 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 1
+      },
+      {
+        "id": "checklist-site-photos-item-2",
+        "text": "촬영일 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 2
+      },
+      {
+        "id": "checklist-site-photos-item-3",
+        "text": "현재 공정 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 3
+      },
+      {
+        "id": "checklist-site-photos-item-4",
+        "text": "사진 원본 수령",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 4
+      },
+      {
+        "id": "checklist-site-photos-item-5",
+        "text": "예비 점주 또는 현장 담당자 설명 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 5
+      },
+      {
+        "id": "checklist-site-photos-item-6",
+        "text": "개인정보와 사용 가능 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 6
+      },
+      {
+        "id": "checklist-site-photos-item-7",
+        "text": "Google Drive 현장 폴더 저장",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 7
+      },
+      {
+        "id": "checklist-site-photos-item-8",
+        "text": "파일명 정리",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 8
+      },
+      {
+        "id": "checklist-site-photos-item-9",
+        "text": "Google Sheets 활용 상태 기록",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 9
+      },
+      {
+        "id": "checklist-site-photos-item-10",
+        "text": "홈페이지 활용 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 10
+      },
+      {
+        "id": "checklist-site-photos-item-11",
+        "text": "블로그 활용 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 11
+      },
+      {
+        "id": "checklist-site-photos-item-12",
+        "text": "인스타그램 활용 여부 확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 12
+      }
+    ],
+    "editable": true,
+    "source": "2026-06-21 음성 전사 및 사용자 정정 기반 예시",
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  },
+  {
+    "id": "checklist-approval",
+    "title": "결재 관리",
+    "description": "결재 요청부터 완료 전달까지 상태를 추적한다.",
+    "category": "결재",
+    "items": [
+      {
+        "id": "checklist-approval-item-1",
+        "text": "결재 요청 내용 정리",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 1
+      },
+      {
+        "id": "checklist-approval-item-2",
+        "text": "관련 자료 Google Drive 저장",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 2
+      },
+      {
+        "id": "checklist-approval-item-3",
+        "text": "KakaoTalk 업무방 공유",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 3
+      },
+      {
+        "id": "checklist-approval-item-4",
+        "text": "대표 결재 요청",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 4
+      },
+      {
+        "id": "checklist-approval-item-5",
+        "text": "미결재 여부 재확인",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 5
+      },
+      {
+        "id": "checklist-approval-item-6",
+        "text": "결재 완료 기록",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 6
+      },
+      {
+        "id": "checklist-approval-item-7",
+        "text": "관련 담당자 전달",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 7
+      },
+      {
+        "id": "checklist-approval-item-8",
+        "text": "Google Sheets 상태 변경",
+        "checked": false,
+        "status": "todo",
+        "notes": "",
+        "order": 8
+      }
+    ],
+    "editable": true,
+    "source": "2026-06-21 음성 전사 기반 예시",
+    "createdAt": "2026-06-22",
+    "updatedAt": "2026-06-22"
+  }
+]
+ };</script>
+  <script src="app.js"></script>
+</body>
+</html>
