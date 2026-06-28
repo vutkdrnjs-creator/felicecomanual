@@ -124,20 +124,21 @@ async function saveSharedData() {
   if (!sharedEndpoint) return false;
   savingShared = true;
   try {
+    const isAppsScript = sharedEndpoint.includes("script.google.com") || sharedEndpoint.includes("script.googleusercontent.com");
     const response = await fetch(sharedEndpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json;charset=utf-8" },
+      headers: { "Content-Type": isAppsScript ? "text/plain;charset=utf-8" : "application/json;charset=utf-8" },
       body: JSON.stringify(snapshot()),
     });
     const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.error || "공유 저장에 실패했습니다.");
+    if (!response.ok || payload.ok === false) throw new Error(payload.error || "공유 저장에 실패했습니다.");
     localStorage.setItem(keys.sharedUpdatedAt, new Date().toISOString());
     savingShared = false;
     return true;
   } catch (error) {
     savingShared = false;
     console.warn("Shared save failed", error);
-    alert("공유 저장 실패: " + (error.message || "Vercel 환경변수와 Google Sheet 편집 권한을 확인해 주세요."));
+    alert("공유 저장 실패: " + (error.message || "Apps Script 배포 URL과 접근 권한을 확인해 주세요."));
     return false;
   }
 }
