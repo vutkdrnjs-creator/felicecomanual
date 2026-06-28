@@ -80,17 +80,50 @@ function normalizeSharedPayload(payload) {
   return data;
 }
 
+function isAppsScriptEndpoint() {
+  return sharedEndpoint.includes("script.google.com") || sharedEndpoint.includes("script.googleusercontent.com");
+}
+
+function loadJsonp(url) {
+  return new Promise((resolve, reject) => {
+    const callbackName = "feliceSharedCallback_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    const timeout = window.setTimeout(() => {
+      delete window[callbackName];
+      script.remove();
+      reject(new Error("공유 데이터를 불러오지 못했습니다."));
+    }, 15000);
+    window[callbackName] = (payload) => {
+      window.clearTimeout(timeout);
+      delete window[callbackName];
+      script.remove();
+      resolve(payload);
+    };
+    script.onerror = () => {
+      window.clearTimeout(timeout);
+      delete window[callbackName];
+      script.remove();
+      reject(new Error("공유 저장소에 연결하지 못했습니다."));
+    };
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + encodeURIComponent(callbackName) + "&t=" + Date.now();
+    document.head.appendChild(script);
+  });
+}
+
 async function loadSharedData(showAlert = false) {
   if (!sharedEndpoint) {
-    if (showAlert) alert("배포 URL에서는 자동 공유 저장이 켜집니다. file://로 열면 공유 저장이 작동하지 않습니다.");
+    if (showAlert) alert("공유 저장 URL이 없습니다. config.js의 FELICE_SHARED_ENDPOINT를 확인해 주세요.");
     return false;
   }
   if (savingShared) return false;
   try {
-    const sep = sharedEndpoint.includes("?") ? "&" : "?";
-    const response = await fetch(sharedEndpoint + sep + "t=" + Date.now(), { cache: "no-store" });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.error || "공유 데이터를 불러오지 못했습니다.");
+    const payload = isAppsScriptEndpoint()
+      ? await loadJsonp(sharedEndpoint)
+      : await fetch(sharedEndpoint + (sharedEndpoint.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" }).then(async (response) => {
+          const body = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(body.error || "공유 데이터를 불러오지 못했습니다.");
+          return body;
+        });
     const data = normalizeSharedPayload(payload);
     if (!data) {
       if (showAlert) alert("공유 저장소에 아직 데이터가 없습니다. 먼저 현재 상태를 올려 주세요.");
@@ -109,7 +142,7 @@ async function loadSharedData(showAlert = false) {
   } catch (error) {
     applyingRemote = false;
     console.warn("Shared load failed", error);
-    if (showAlert) alert("공유 데이터를 불러오지 못했습니다. " + (error.message || "Vercel 환경변수와 Google Sheet 권한을 확인해 주세요."));
+    if (showAlert) alert("공유 데이터를 불러오지 못했습니다. " + (error.message || "Apps Script 배포 URL을 확인해 주세요."));
     return false;
   }
 }
@@ -124,10 +157,21 @@ async function saveSharedData() {
   if (!sharedEndpoint) return false;
   savingShared = true;
   try {
-    const isAppsScript = sharedEndpoint.includes("script.google.com") || sharedEndpoint.includes("script.googleusercontent.com");
+    if (isAppsScriptEndpoint()) {
+      await fetch(sharedEndpoint, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(snapshot()),
+      });
+      localStorage.setItem(keys.sharedUpdatedAt, new Date().toISOString());
+      savingShared = false;
+      window.setTimeout(() => loadSharedData(false), 900);
+      return true;
+    }
     const response = await fetch(sharedEndpoint, {
       method: "POST",
-      headers: { "Content-Type": isAppsScript ? "text/plain;charset=utf-8" : "application/json;charset=utf-8" },
+      headers: { "Content-Type": "application/json;charset=utf-8" },
       body: JSON.stringify(snapshot()),
     });
     const payload = await response.json().catch(() => ({}));
